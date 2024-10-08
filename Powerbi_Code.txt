@@ -1,0 +1,47 @@
+CREDIT CARD FINANCIAL DASHBOARD   
+
+
+TO ADD A COLUMN IN CUSTOMER TABLE IN POWER BI
+
+1.	AgeGroup = SWITCH(
+    			TRUE(), 
+        		'ccdb customer'[Customer_Age] < 30, "20-30",
+        		'ccdb customer'[Customer_Age] >= 30 && 'ccdb customer'[Customer_Age] < 40, "30-40",
+       			'ccdb customer'[Customer_Age] >= 40 && 'ccdb customer'[Customer_Age] < 50, "40-50",
+        		'ccdb customer'[Customer_Age] >= 50 && 'ccdb customer'[Customer_Age] < 60, "50-60",
+        		'ccdb customer'[Customer_Age] >= 60 && 'ccdb customer'[Customer_Age] < 70, "60-70",
+        		'ccdb customer'[Customer_Age] <= 70, "70+",
+        		"unknown"
+    			)
+
+2.	IncomeGroup = SWITCH(
+    			TRUE(),
+    			'ccdb customer'[Income] < 10000, "Low",
+   			'ccdb customer'[Income] >= 10000 && 'ccdb customer'[Income] < 15000, "Medium",
+    			'ccdb customer'[Income] >= 15000, "High",
+    			"unknown"
+    			)
+
+3.	Revenue = 'ccdb credit_card'[Annual_Fees] + 'ccdb credit_card'[Total_Trans_Amt] + 'ccdb credit_card'[Interest_Earned]
+
+4.	Week_num2 = WEEKNUM('ccdb credit_card'[Week_Start_Date])
+
+
+
+1.	Current_week_Revenue = CALCULATE(
+    				SUM('ccdb credit_card'[Revenue]),
+    				FILTER(
+        				ALL('ccdb credit_card'),
+        				'ccdb credit_card'[Week_num2] = MAX('ccdb credit_card'[Week_num2])
+        				)
+    				)
+
+2.	Previous_week_Revenue = CALCULATE(
+    					SUM('ccdb credit_card'[Revenue]),
+    					FILTER(
+        					ALL('ccdb credit_card'),
+        					'ccdb credit_card'[Week_num2] = MAX('ccdb credit_card'[Week_num2])- 1
+        					)
+    					)
+
+3.	WOW_Revenue = DIVIDE(([Current_week_Revenue] - [Previous_week_Revenue]), [Previous_week_Revenue])
